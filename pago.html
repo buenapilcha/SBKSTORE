@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — SBK STORE</title>
+    <style>
+        /* Paleta Monocromática Estricta Estilo Premium */
+        :root {
+            --bg-main: #ffffff;
+            --bg-surface: #f5f5f7;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-color: #e5e5e7;
+            --accent-success: #008000;
+            --btn-disabled: #cccccc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            /* ELIMINA EL RECUADRO AZUL/CELESTE AL TOCAR EN CELULARES */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        /* --- NAVBAR SUPERIOR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background-color: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .brand-logo img {
+            width: 70px;
+            height: auto;
+            display: block;
+        }
+
+        .back-to-shop-link {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- CHECKOUT ESTRUCTURA RESPONSIVE --- */
+        .checkout-wrapper {
+            margin-top: 64px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkout-forms-section {
+            padding: 24px 16px;
+        }
+
+        .checkout-container-narrow {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- PASOS DEL ACORDEÓN --- */
+        .step-block {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .step-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-number {
+            font-size: 11px;
+            font-weight: 700;
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-edit-step {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            outline: none;
+        }
+        .btn-edit-step svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-secondary);
+        }
+
+        .step-content {
+            display: none;
+        }
+        .step-block.active .step-content {
+            display: block;
+        }
+
+        .step-summary-preview {
+            display: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 0;
+            line-height: 1.5;
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
+        
+        .step-block.completed:not(.active) .step-summary-preview {
+            display: block;
+        }
+        .step-block.completed .btn-edit-step {
+            display: flex;
+        }
+        .step-block.completed .step-number {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        /* GRILLA DE FORMULARIOS */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding-left: 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            outline: none; /* ELIMINA BORDE AZUL EN ENFOQUE */
+            border-radius: 0;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--text-primary);
+        }
+
+        /* Selector con flecha premium minimalista */
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .select-wrapper::after {
+            content: "";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid var(--text-primary);
+            pointer-events: none;
+        }
+
+        .btn-step-continue {
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            border: none;
+            padding: 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 16px;
+            width: 100%;
+            outline: none;
+        }
+
+        /* --- CHECKBOX FACTURA A PREMIUM --- */
+        .checkbox-premium-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        /* Ocultamos el checkbox nativo feo */
+        .checkbox-premium-wrapper input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Caja de diseño personalizada */
+        .custom-checkmark {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            display: inline-block;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        /* Cambio de borde al pasar el mouse/tocar */
+        .checkbox-premium-wrapper:hover input ~ .custom-checkmark,
+        .checkbox-premium-wrapper input:focus ~ .custom-checkmark {
+            border-color: var(--text-primary);
+        }
+
+        /* Fondo y borde cuando está seleccionado */
+        .checkbox-premium-wrapper input:checked ~ .custom-checkmark {
+            background-color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* La tilde elegante (oculta por defecto) */
+        .custom-checkmark::after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid var(--bg-main);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Mostrar la tilde cuando está activo */
+        .checkbox-premium-wrapper input:checked ~ .custom-checkmark::after {
+            display: block;
+        }
+
+        .checkbox-label-text { 
+            font-size: 12px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+
+        .factura-a-panel {
+            display: none;
+            background-color: var(--bg-surface);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-top: 8px;
+        }
+
+        /* --- NUEVOS MÉTODOS DE PAGO ULTRA-PREMIUM --- */
+        .payment-options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .payment-option-card {
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .payment-option-card:hover {
+            border-color: var(--text-primary);
+        }
+        .payment-option-card.selected { 
+            border-color: var(--text-primary); 
+            background-color: var(--bg-surface); 
+        }
+        .payment-card-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        /* Indicador circular personalizado estilo iOS/Minimalist */
+        .custom-radio-indicator {
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            background-color: var(--bg-main);
+            transition: all 0.2s ease;
+        }
+        .payment-option-card.selected .custom-radio-indicator {
+            border-color: var(--text-primary);
+        }
+        .custom-radio-indicator::after {
+            content: "";
+            position: absolute;
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-primary);
+        }
+        .payment-option-card.selected .custom-radio-indicator::after {
+            display: block;
+        }
+        .payment-card-title { 
+            font-size: 12px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        /* SECCIÓN RESUMEN LATERAL */
+        .checkout-summary-section {
+            background-color: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            padding: 24px 16px;
+        }
+
+        .summary-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        .summary-product-item { display: flex; align-items: center; gap: 12px; }
+        .summary-item-img-wrapper { position: relative; width: 48px; height: 48px; background-color: #ffffff; border: 1px solid var(--border-color); flex-shrink: 0; }
+        .summary-item-img { width: 100%; height: 100%; object-fit: cover; }
+        .summary-item-badge { position: absolute; top: -6px; right: -6px; background-color: var(--text-primary); color: var(--bg-main); font-size: 9px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .summary-item-info { flex-grow: 1; min-width: 0; }
+        .summary-item-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .summary-item-price { font-size: 12px; font-weight: 700; text-align: right; flex-shrink: 0; }
+
+        .cost-breakdown { display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 16px; }
+        .cost-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+        .cost-row.total-row { font-size: 14px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; }
+
+        /* BOTÓN DE CIERRE DINÁMICO */
+        .btn-submit-order {
+            background-color: var(--btn-disabled);
+            color: var(--bg-main);
+            border: none;
+            padding: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+            width: 100%;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-submit-order.active {
+            background-color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* 💻 --- ESCRITORIO --- */
+        @media (min-width: 992px) {
+            .checkout-wrapper {
+                display: grid;
+                grid-template-columns: 1fr 420px;
+                min-height: calc(100vh - 64px);
+            }
+            .checkout-forms-section {
+                padding: 48px 64px;
+            }
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding-left: 36px;
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+            .step-summary-preview {
+                padding-left: 36px;
+            }
+            .factura-a-panel {
+                margin-left: 36px;
+            }
+            .payment-options-grid {
+                padding-left: 36px;
+            }
+            .btn-step-continue {
+                width: auto;
+                margin-left: 36px;
+                padding: 12px 24px;
+            }
+            .checkout-summary-section {
+                border-top: none;
+                border-left: 1px solid var(--border-color);
+                padding: 48px 32px;
+                position: sticky;
+                top: 64px;
+                height: calc(100vh - 64px);
+                overflow-y: auto;
+            }
+            .summary-items-list {
+                max-height: 45vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+            <img src="logo.png" alt="SBK STORE">
+        </a>
+        <a href="index.html" class="back-to-shop-link">&larr; Tienda</a>
+    </nav>
+
+    <main class="checkout-wrapper">
+        
+        <section class="checkout-forms-section">
+            <div class="checkout-container-narrow">
+                <form id="checkoutForm" onsubmit="procesarOrdenFinal(event)">
+                    
+                    <div id="step1" class="step-block active">
+                        <div class="step-header">
+                            <div class="step-title-wrapper">
+                                <div class="step-number">1</div>
+                                <h2 class="step-title">Datos de Contacto</h2>
+                            </div>
+                            <button type="button" class="btn-edit-step" onclick="abrirPaso(1)">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                        </div>
+                        <div class="step-summary-preview" id="summaryStep1"></div>
+                        <div class="step-content">
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="email">Correo Electrónico *</label>
+                                    <input type="email" id="email" required placeholder="ejemplo@correo.com" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="telefono">Teléfono Celular *</label>
+                                    <input type="tel" id="telefono" required placeholder="1123456789 (10 dígitos sin 0 ni 15)" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); sincronizarEntradaAStorage(this);">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-step-continue" onclick="guardarPaso1()">Continuar al envío</button>
+                        </div>
+                    </div>
+
+                    <div id="step2" class="step-block">
+                        <div class="step-header">
+                            <div class="step-title-wrapper">
+                                <div class="step-number">2</div>
+                                <h2 class="step-title">Datos del Destinatario</h2>
+                            </div>
+                            <button type="button" class="btn-edit-step" onclick="abrirPaso(2)">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                        </div>
+                        <div class="step-summary-preview" id="summaryStep2"></div>
+                        <div class="step-content">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre *</label>
+                                    <input type="text" id="nombre" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="apellido">Apellido *</label>
+                                    <input type="text" id="apellido" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="direccion">Calle y Número *</label>
+                                    <input type="text" id="direccion" placeholder="Av. de Mayo 123" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="depto">Depto / Piso (Opcional)</label>
+                                    <input type="text" id="depto" placeholder="Piso 2 B" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="barrio">Barrio (Opcional)</label>
+                                    <input type="text" id="barrio" placeholder="Centro" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ciudad">Ciudad *</label>
+                                    <input type="text" id="ciudad" placeholder="localidad" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="provincia">Provincia *</label>
+                                    <div class="select-wrapper">
+                                        <select id="provincia" onchange="sincronizarEntradaAStorage(this)">
+                                            <option value="CABA">CABA</option>
+                                            <option value="Buenos Aires">Buenos Aires</option>
+                                            <option value="Catamarca">Catamarca</option>
+                                            <option value="Chaco">Chaco</option>
+                                            <option value="Chubut">Chubut</option>
+                                            <option value="Córdoba">Córdoba</option>
+                                            <option value="Corrientes">Corrientes</option>
+                                            <option value="Entre Ríos">Entre Ríos</option>
+                                            <option value="Formosa">Formosa</option>
+                                            <option value="Jujuy">Jujuy</option>
+                                            <option value="La Pampa">La Pampa</option>
+                                            <option value="La Rioja">La Rioja</option>
+                                            <option value="Mendoza">Mendoza</option>
+                                            <option value="Misiones">Misiones</option>
+                                            <option value="Neuquén">Neuquén</option>
+                                            <option value="Río Negro">Río Negro</option>
+                                            <option value="Salta">Salta</option>
+                                            <option value="San Juan">San Juan</option>
+                                            <option value="San Luis">San Luis</option>
+                                            <option value="Santa Cruz">Santa Cruz</option>
+                                            <option value="Santa Fe">Santa Fe</option>
+                                            <option value="Santiago del Estero">Santiago del Estero</option>
+                                            <option value="Tierra del Fuego">Tierra del Fuego, Antártida e Islas del Atlántico Sur</option>
+                                            <option value="Tucumán">Tucumán</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="codigo_postal">Código Postal *</label>
+                                    <input type="text" id="codigo_postal" placeholder="cod zona" oninput="sincronizarEntradaAStorage(this)">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-step-continue" onclick="guardarPaso2()">Continuar a facturación</button>
+                        </div>
+                    </div>
+
+                    <div id="step3" class="step-block">
+                        <div class="step-header">
+                            <div class="step-title-wrapper">
+                                <div class="step-number">3</div>
+                                <h2 class="step-title">Datos de Facturación</h2>
+                            </div>
+                            <button type="button" class="btn-edit-step" onclick="abrirPaso(3)">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                        </div>
+                        <div class="step-summary-preview" id="summaryStep3"></div>
+                        <div class="step-content">
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="dni_cuit">DNI o CUIT del Titular *</label>
+                                    <input type="text" id="dni_cuit" placeholder="Nº de documento o CUIT" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, ''); sincronizarEntradaAStorage(this);">
+                                </div>
+                            </div>
+
+                            <label class="checkbox-premium-wrapper">
+                                <input type="checkbox" id="chkFacturaA" onchange="alternarFacturaAPanel(); sincronizarEntradaAStorage(this);">
+                                <span class="custom-checkmark"></span>
+                                <span class="checkbox-label-text">Necesito Factura A</span>
+                            </label>
+
+                            <div class="factura-a-panel" id="facturaAPanel">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label for="cuit_fiscal">CUIT Fiscal *</label>
+                                        <input type="text" id="cuit_fiscal" placeholder="30-XXXXXXXX-X" oninput="sincronizarEntradaAStorage(this)">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="razon_social">Razón Social *</label>
+                                        <input type="text" id="razon_social" placeholder="Empresa S.A." oninput="sincronizarEntradaAStorage(this)">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="condicion_iva">Condición IVA *</label>
+                                        <div class="select-wrapper">
+                                            <select id="condicion_iva" onchange="sincronizarEntradaAStorage(this)">
+                                                <option value="Responsable Inscripto">Responsable Inscripto</option>
+                                                <option value="Monotributista">Monotributista</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="direccion_fiscal">Dirección Fiscal *</label>
+                                        <input type="text" id="direccion_fiscal" placeholder="Dirección legal" oninput="sincronizarEntradaAStorage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-step-continue" onclick="guardarPaso3()">Continuar al pago</button>
+                        </div>
+                    </div>
+
+                    <div id="step4" class="step-block">
+                        <div class="step-header">
+                            <div class="step-title-wrapper">
+                                <div class="step-number">4</div>
+                                <h2 class="step-title">Método de Pago</h2>
+                            </div>
+                        </div>
+                        <div class="step-content">
+                            <div class="payment-options-grid">
+                                <div class="payment-option-card selected" id="card_transferencia" onclick="seleccionarMetodoPagoPremium('transferencia')">
+                                    <div class="payment-card-left">
+                                        <span class="custom-radio-indicator"></span>
+                                        <div class="payment-card-title">Transferencia Bancaria / CVU</div>
+                                    </div>
+                                </div>
+                                <div class="payment-option-card" id="card_tarjetas" onclick="seleccionarMetodoPagoPremium('tarjetas')">
+                                    <div class="payment-card-left">
+                                        <span class="custom-radio-indicator"></span>
+                                        <div class="payment-card-title">Tarjeta de Crédito / Débito</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <section class="checkout-summary-section">
+            <div class="summary-items-list" id="summaryProductsList"></div>
+            <div class="cost-breakdown">
+                <div class="cost-row"><span>Subtotal</span><span id="summarySubtotal">$0</span></div>
+                <div class="cost-row"><span>Envío</span><span style="color: var(--accent-success); font-weight: 600;">Gratis</span></div>
+                <div class="cost-row total-row"><span>Total</span><span id="summaryTotal">$0</span></div>
+            </div>
+            <button type="submit" id="btnFinalizar" form="checkoutForm" class="btn-submit-order" disabled>Finalizar Pedido</button>
+        </section>
+
+    </main>
+
+    <script>
+        let productosComprados = JSON.parse(localStorage.getItem('barber_cart_items')) || [];
+        let subtotalGlobal = 0;
+        let totalGlobal = 0;
+        let metodoPagoSeleccionado = "transferencia";
+
+        // CLAVE DE PERSISTENCIA EN CACHÉ LOCAL
+        const PERSISTENCE_KEY = "checkout_autosave_fields";
+
+        function inicializarResumenCheckout() {
+            const listContainer = document.getElementById('summaryProductsList');
+            listContainer.innerHTML = "";
+            
+            if (productosComprados.length === 0) { 
+                listContainer.innerHTML = `<p style="font-size:13px; color:var(--text-secondary); text-align:center; padding: 20px 0;">Tu bolsa está vacía.</p>`;
+                return; 
+            }
+            
+            subtotalGlobal = 0;
+            productosComprados.forEach(item => {
+                const precioNumerico = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
+                subtotalGlobal += (precioNumerico * item.cantidad);
+                
+                listContainer.innerHTML += `
+                    <div class="summary-product-item">
+                        <div class="summary-item-img-wrapper">
+                            <img class="summary-item-img" src="${item.img}" alt="${item.name}">
+                            <span class="summary-item-badge">${item.cantidad}</span>
+                        </div>
+                        <div class="summary-item-info">
+                            <div class="summary-item-name">${item.name}</div>
+                        </div>
+                        <div class="summary-item-price">${item.price}</div>
+                    </div>`;
+            });
+            
+            totalGlobal = subtotalGlobal; 
+            document.getElementById('summarySubtotal').innerText = `$${subtotalGlobal.toLocaleString('es-AR')}`;
+            document.getElementById('summaryTotal').innerText = `$${totalGlobal.toLocaleString('es-AR')}`;
+        }
+
+        window.abrirPaso = function(numeroPaso) {
+            document.querySelectorAll('.step-block').forEach(block => block.classList.remove('active'));
+            document.getElementById(`step${numeroPaso}`).classList.add('active');
+        }
+
+        window.guardarPaso1 = function() {
+            const email = document.getElementById('email');
+            const tel = document.getElementById('telefono');
+            const regexTel = /^[0-9]{10}$/;
+            
+            if (!regexTel.test(tel.value)) {
+                tel.setCustomValidity("El número debe tener exactamente 10 dígitos (Ej: 1123456789).");
+                tel.reportValidity();
+                return;
+            } else {
+                tel.setCustomValidity(""); 
+            }
+
+            if(email.reportValidity() && tel.reportValidity()) {
+                document.getElementById('summaryStep1').innerText = `${email.value} | Cel: ${tel.value}`;
+                document.getElementById('step1').classList.add('completed');
+                abrirPaso(2);
+                activarRequeridosPaso2(true);
+                verificarEstadoBotonFinal();
+                registrarPasoCompletadoEnCache("step1", true);
+            }
+        }
+
+        window.guardarPaso2 = function() {
+            const camposRequeridos = ['nombre', 'apellido', 'direccion', 'ciudad', 'codigo_postal'];
+            let valido = true;
+            
+            camposRequeridos.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el.value.trim()) { el.reportValidity(); valido = false; }
+            });
+
+            if(valido) {
+                const nombre = document.getElementById('nombre').value;
+                const apellido = document.getElementById('apellido').value;
+                const dir = document.getElementById('direccion').value;
+                
+                document.getElementById('summaryStep2').innerText = `${nombre} ${apellido} — ${dir}`;
+                document.getElementById('step2').classList.add('completed');
+                abrirPaso(3);
+                document.getElementById('dni_cuit').required = true;
+                verificarEstadoBotonFinal();
+                registrarPasoCompletadoEnCache("step2", true);
+            }
+        }
+
+        window.guardarPaso3 = function() {
+            const dni = document.getElementById('dni_cuit');
+            if(dni.reportValidity()) {
+                const reqA = document.getElementById('chkFacturaA').checked;
+                document.getElementById('summaryStep3').innerText = `ID: ${dni.value} ${reqA ? '[Factura A]' : '[Cons. Final]'}`;
+                document.getElementById('step3').classList.add('completed');
+                abrirPaso(4);
+                verificarEstadoBotonFinal();
+                registrarPasoCompletadoEnCache("step3", true);
+            }
+        }
+
+        function activarRequeridosPaso2(status) {
+            ['nombre', 'apellido', 'direccion', 'ciudad', 'codigo_postal'].forEach(id => {
+                document.getElementById(id).required = status;
+            });
+        }
+
+        function verificarEstadoBotonFinal() {
+            const s1 = document.getElementById('step1').classList.contains('completed');
+            const s2 = document.getElementById('step2').classList.contains('completed');
+            const s3 = document.getElementById('step3').classList.contains('completed');
+            const btn = document.getElementById('btnFinalizar');
+
+            if (s1 && s2 && s3) {
+                btn.removeAttribute('disabled');
+                btn.classList.add('active');
+            } else {
+                btn.setAttribute('disabled', 'true');
+                btn.classList.remove('active');
+            }
+        }
+
+        window.alternarFacturaAPanel = function() {
+            const checkBox = document.getElementById('chkFacturaA');
+            const panel = document.getElementById('facturaAPanel');
+            const campos = panel.querySelectorAll('input, select');
+            if (checkBox.checked) {
+                panel.style.display = 'block';
+                campos.forEach(c => c.required = true);
+            } else {
+                panel.style.display = 'none';
+                campos.forEach(c => c.required = false);
+            }
+        }
+
+        window.seleccionarMetodoPagoPremium = function(metodoId) {
+            metodoPagoSeleccionado = metodoId;
+            document.querySelectorAll('.payment-option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`card_${metodoId}`).classList.add('selected');
+            
+            // Sincronizar selección de pago en caché temporal
+            let storeData = JSON.parse(localStorage.getItem(PERSISTENCE_KEY)) || {};
+            storeData["metodoPagoSeleccionado"] = metodoId;
+            localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(storeData));
+        }
+
+        // CONTROLADORES DE AUTO-GUARDADO PERSISTENTE EN TIEMPO REAL
+        function sincronizarEntradaAStorage(elemento) {
+            let storeData = JSON.parse(localStorage.getItem(PERSISTENCE_KEY)) || {};
+            if (elemento.type === "checkbox") {
+                storeData[elemento.id] = elemento.checked;
+            } else {
+                storeData[elemento.id] = elemento.value;
+            }
+            localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(storeData));
+        }
+
+        function registrarPasoCompletadoEnCache(pasoId, estado) {
+            let storeData = JSON.parse(localStorage.getItem(PERSISTENCE_KEY)) || {};
+            if(!storeData.pasosCompletados) storeData.pasosCompletados = {};
+            storeData.pasosCompletados[pasoId] = estado;
+            localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(storeData));
+        }
+
+        // MOTOR DE RESTAURACIÓN AUTOMÁTICA DE FORMULARIOS AL CARGAR LA PÁGINA
+        function restaurarFormularioDesdeStorage() {
+            const cache = localStorage.getItem(PERSISTENCE_KEY);
+            if (!cache) return;
+            
+            const storeData = JSON.parse(cache);
+            
+            // Lista de todos los ID de los campos para auto-inyectar la data
+            const campos = [
+                'email', 'telefono', 'nombre', 'apellido', 'direccion', 
+                'depto', 'barrio', 'ciudad', 'provincia', 'codigo_postal', 
+                'dni_cuit', 'cuit_fiscal', 'razon_social', 'condicion_iva', 'direccion_fiscal'
+            ];
+
+            campos.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && storeData[id] !== undefined) {
+                    el.value = storeData[id];
+                }
+            });
+
+            // Re-instanciar panel de Factura A si estaba tildado
+            if (storeData['chkFacturaA'] === true) {
+                document.getElementById('chkFacturaA').checked = true;
+                alternarFacturaAPanel();
+            }
+
+            // Re-instanciar método de pago seleccionado
+            if (storeData['metodoPagoSeleccionado']) {
+                seleccionarMetodoPagoPremium(storeData['metodoPagoSeleccionado']);
+            }
+
+            // Re-procesar e inyectar visualmente los bloques ya validados por el cliente
+            if (storeData.pasosCompletados) {
+                let ultimoPasoAbierto = 1;
+
+                if (storeData.pasosCompletados['step1'] && document.getElementById('email').value && document.getElementById('telefono').value) {
+                    document.getElementById('summaryStep1').innerText = `${document.getElementById('email').value} | Cel: ${document.getElementById('telefono').value}`;
+                    document.getElementById('step1').classList.add('completed');
+                    activarRequeridosPaso2(true);
+                    ultimoPasoAbierto = 2;
+                }
+                if (storeData.pasosCompletados['step2'] && document.getElementById('nombre').value && document.getElementById('direccion').value) {
+                    document.getElementById('summaryStep2').innerText = `${document.getElementById('nombre').value} ${document.getElementById('apellido').value} — ${document.getElementById('direccion').value}`;
+                    document.getElementById('step2').classList.add('completed');
+                    document.getElementById('dni_cuit').required = true;
+                    ultimoPasoAbierto = 3;
+                }
+                if (storeData.pasosCompletados['step3'] && document.getElementById('dni_cuit').value) {
+                    const reqA = document.getElementById('chkFacturaA').checked;
+                    document.getElementById('summaryStep3').innerText = `ID: ${document.getElementById('dni_cuit').value} ${reqA ? '[Factura A]' : '[Cons. Final]'}`;
+                    document.getElementById('step3').classList.add('completed');
+                    ultimoPasoAbierto = 4;
+                }
+
+                abrirPaso(ultimoPasoAbierto);
+                verificarEstadoBotonFinal();
+            }
+        }
+
+        window.procesarOrdenFinal = function(event) {
+            event.preventDefault();
+            const solicitaFacturaA = document.getElementById('chkFacturaA').checked;
+
+            const ordenCompleta = {
+                contacto: {
+                    email: document.getElementById('email').value,
+                    telefono: document.getElementById('telefono').value
+                },
+                destinatario: {
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    direccion: document.getElementById('direccion').value,
+                    depto: document.getElementById('depto').value || "",
+                    barrio: document.getElementById('barrio').value || "",
+                    ciudad: document.getElementById('ciudad').value,
+                    provincia: document.getElementById('provincia').value,
+                    codigoPostal: document.getElementById('codigo_postal').value
+                },
+                facturacion: {
+                    dniCuitTitular: document.getElementById('dni_cuit').value,
+                    requiereFacturaA: solicitaFacturaA,
+                    cuitFiscal: solicitaFacturaA ? document.getElementById('cuit_fiscal').value : "",
+                    razonSocial: solicitaFacturaA ? document.getElementById('razon_social').value : "",
+                    condicionIva: solicitaFacturaA ? document.getElementById('condicion_iva').value : "",
+                    direccionFiscal: solicitaFacturaA ? document.getElementById('direccion_fiscal').value : ""
+                },
+                pago: {
+                    metodo: metodoPagoSeleccionado
+                },
+                productos: productosComprados,
+                totales: {
+                    subtotal: subtotalGlobal,
+                    envio: "Gratis",
+                    total: totalGlobal
+                },
+                fechaOrden: new Date().toISOString()
+            };
+
+            localStorage.setItem('order_checkout_data', JSON.stringify(ordenCompleta));
+
+            // Al confirmar orden limpiamos los datos temporales de este formulario
+            localStorage.removeItem(PERSISTENCE_KEY);
+
+            if (metodoPagoSeleccionado === "transferencia") {
+                window.location.href = "transferencias.html";
+            } else if (metodoPagoSeleccionado === "tarjetas") {
+                window.location.href = "tarjetas.html";
+            }
+        }
+
+        document.getElementById('telefono').addEventListener('input', function() {
+            this.setCustomValidity("");
+        });
+
+        // Secuencia lógica de ejecución inicial
+        inicializarResumenCheckout();
+        activarRequeridosPaso2(false);
+        restaurarFormularioDesdeStorage();
+    </script>
+</body>
+</html>

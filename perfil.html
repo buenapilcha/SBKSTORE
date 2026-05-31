@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBK STORE | MEMBERSHIP</title>
+    <style>
+        /* Paleta Monocromática Estricta Estilo Premium */
+        :root {
+            --bg-main: #ffffff;
+            --bg-surface: #f5f5f7;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-color: #e5e5e7;
+            --sidebar-width: 240px;
+            --accent-success: #1d1d1f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        /* --- NAVBAR SUPERIOR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background-color: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* --- SIDEBAR LATERAL IZQUIERDO --- */
+        .sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - 64px);
+            background-color: var(--bg-main);
+            border-right: 1px solid var(--border-color);
+            padding: 32px 24px;
+            z-index: 90;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-item a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+
+        .sidebar-item a:hover, .sidebar-item.active a {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .sidebar-socials {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 100px;
+        }
+
+        .social-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+        
+        .social-link:hover { opacity: 0.6; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            margin-top: 64px;
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            min-height: calc(100vh - 64px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- CONTENEDOR CENTRAL TARJETA --- */
+        .profile-container-card {
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            background-color: var(--bg-main);
+        }
+
+        .profile-view-block {
+            display: none;
+        }
+
+        .profile-view-block.active {
+            display: block;
+        }
+
+        .header-section-panel {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .panel-main-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .panel-description-text {
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* --- FORMULARIO --- */
+        .form-group-block {
+            margin-bottom: 20px;
+        }
+
+        .label-premium-clean {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-premium-clean {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .input-premium-clean:focus {
+            border-color: var(--text-primary);
+            background-color: var(--bg-main);
+        }
+
+        .btn-action-premium {
+            width: 100%;
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            border: none;
+            padding: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action-premium:hover {
+            opacity: 0.85;
+        }
+
+        .btn-action-premium:disabled {
+            background-color: var(--bg-surface);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        /* --- DASHBOARD DE BIENVENIDA MODERNO --- */
+        .welcome-block-box {
+            text-align: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .welcome-user-title {
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        .status-level-container {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            margin-top: 24px;
+            margin-bottom: 24px;
+        }
+
+        .status-level-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .status-level-rank {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            color: var(--text-primary);
+        }
+
+        .notification-banner-modern {
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            padding: 16px;
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        /* --- SECCIÓN NUEVA: CONEXIÓN DE CORREO PROFESIONAL --- */
+        .account-link-section {
+            margin-bottom: 24px;
+        }
+
+        .account-row-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            margin-top: 8px;
+        }
+
+        .account-info-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .account-email-display {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .account-status-indicator {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2e7d32;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 700;
+        }
+
+        .account-status-indicator::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #2e7d32;
+            border-radius: 50%;
+        }
+
+        .btn-unlink-action {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .btn-unlink-action:hover {
+            background-color: var(--bg-surface);
+            border-color: var(--text-primary);
+        }
+
+        /* --- DETALLES ADICIONALES DE CUENTA --- */
+        .meta-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .meta-detail-card {
+            background-color: var(--bg-surface);
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-detail-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .meta-detail-value {
+            font-size: 11px;
+            color: var(--text-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .divider-premium-line {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+        }
+
+        /* --- RESPONSIVE COMPATIBILIDAD --- */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); top: 64px; height: calc(100vh - 64px); width: 100%; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 40px 16px; }
+            .profile-container-card { padding: 32px 20px; }
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="logo.png" alt="SBK STORE" class="brand-logo-img">
+            </div>
+        </div>
+    </nav>
+
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="sidebar-item"><a href="index.html">Inicio</a></li>
+            <li class="sidebar-item"><a href="index.html">Clippers</a></li>
+            <li class="sidebar-item"><a href="index.html">Trimmers</a></li>
+            <li class="sidebar-item"><a href="index.html">Shavers</a></li>
+            <li class="sidebar-item"><a href="index.html">Accesorios</a></li>
+            <li class="sidebar-item"><a href="info.html">Acerca de nosotros/FAQ</a></li>
+        </ul>
+        
+        <div class="sidebar-socials">
+            <a href="https://www.instagram.com/sbkstore.ar?igsh=bjMwbms5ZTU1YjE3" target="_blank" class="social-link" aria-label="Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="https://www.tiktok.com/@sbkstore.ar" target="_blank" class="social-link" aria-label="TikTok">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+            </a>
+            <a href="https://wa.me/+5492477399308" target="_blank" class="social-link" aria-label="WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="profile-container-card">
+
+            <!-- VISTA DE REGISTRO / ACCESO -->
+            <div id="viewRegister" class="profile-view-block">
+                <div class="header-section-panel">
+                    <h1 class="panel-main-title">Membresía SBK Store</h1>
+                    <p class="panel-description-text">Forme parte de nuestra comunidad selecta. Regístrese para recibir un beneficio de bienvenida exclusivo y realizar el seguimiento de su actividad.</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group-block">
+                        <label class="label-premium-clean">Nombre Completo</label>
+                        <input type="text" class="input-premium-clean" id="regName" required placeholder="EJ: ESTEBAN QUITO">
+                    </div>
+                    <div class="form-group-block">
+                        <label class="label-premium-clean">Correo Electrónico</label>
+                        <input type="email" class="input-premium-clean" id="regEmail" required placeholder="EJ: SBK@GMAIL.COM">
+                    </div>
+                    <button type="submit" class="btn-action-premium" id="btnSubmitRegister">Unirse a la Comunidad</button>
+                </form>
+            </div>
+
+            <!-- VISTA DEL DASHBOARD / BIENVENIDA PREMIUM MODERNA -->
+            <div id="viewDashboard" class="profile-view-block">
+                
+                <div class="welcome-block-box">
+                    <h2 class="welcome-user-title" id="dashName">Bienvenido</h2>
+                </div>
+
+                <div class="status-level-container">
+                    <div class="status-level-label">Segmentación de Cliente</div>
+                    <div class="status-level-rank" id="dashTier">Calculando...</div>
+                </div>
+
+                <div class="notification-banner-modern">
+                    Su código de beneficio exclusivo del 10% ha sido enviado con éxito a su dirección de correo electrónico vinculada.
+                </div>
+
+                <!-- SECCIÓN DE CORREO VINCULADO PROFESIONAL -->
+                <div class="account-link-section">
+                    <div class="divider-premium-line">Identidad de Acceso</div>
+                    <div class="account-row-box">
+                        <div class="account-info-left">
+                            <span class="account-email-display" id="dashEmail">correo@ejemplo.com</span>
+                            <span class="account-status-indicator">Vinculado</span>
+                        </div>
+                        <button class="btn-unlink-action" onclick="cerrarSesionLocal()">Desvincular</button>
+                    </div>
+                </div>
+
+                <!-- DETALLES COMPLEMENTARIOS PROFESIONALES -->
+                <div class="divider-premium-line">Información Adicional</div>
+                <div class="meta-details-grid">
+                    <div class="meta-detail-card">
+                        <div class="meta-detail-label">Fecha de Alta</div>
+                        <div class="meta-detail-value">Hoy</div>
+                    </div>
+                    <div class="meta-detail-card">
+                        <div class="meta-detail-label">Tipo de Acceso</div>
+                        <div class="meta-detail-value">Membresía</div>
+                    </div>
+                </div>
+
+                <!-- BOTÓN PRINCIPAL VOLVER AL INICIO -->
+                <button class="btn-action-premium" style="margin-top: 0;" onclick="window.location.href='index.html'">Volver al Inicio</button>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="text/javascript">
+        // Inicialización oficial de EmailJS
+        emailjs.init({ publicKey: "POUAGBeC_jtogj0Qv" });
+
+        const viewRegister = document.getElementById('viewRegister');
+        const viewDashboard = document.getElementById('viewDashboard');
+        const registerForm = document.getElementById('registerForm');
+        const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+
+        // Código único estricto modificado
+        const CODIGO_DESCUENTO = "SBK10OFF";
+
+        // Lee los elementos de la bolsa del localStorage tal cual los guarda tu Index
+        function obtenerRangoActual() {
+            const carrito = JSON.parse(localStorage.getItem('barber_cart_items')) || [];
+            let totalAcumulado = 0;
+            
+            carrito.forEach(item => {
+                const precioLimpio = parseInt(item.price.replace(/[^0-9]/g, ''));
+                totalAcumulado += (precioLimpio * item.cantidad);
+            });
+
+            if (totalAcumulado === 0) return "Visitante Activo";
+            if (totalAcumulado < 30000) return "Barbero Aprendiz";
+            if (totalAcumulado < 80000) return "Profesional";
+            return "Master Barber";
+        }
+
+        // Control de estados de sesión local persistente
+        function chequearEstadoMembresia() {
+            const sesionActiva = JSON.parse(localStorage.getItem('sbk_membership_session'));
+
+            if (sesionActiva) {
+                viewRegister.classList.remove('active');
+                viewDashboard.classList.add('active');
+
+                document.getElementById('dashName').innerText = `Hola, ${sesionActiva.name}`;
+                document.getElementById('dashEmail').innerText = sesionActiva.email;
+                document.getElementById('dashTier').innerText = obtenerRangoActual();
+            } else {
+                viewDashboard.classList.remove('active');
+                viewRegister.classList.add('active');
+            }
+        }
+
+        // Disparador del envío con EmailJS utilizando el parámetro fijo SBK10OFF
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            btnSubmitRegister.disabled = true;
+            btnSubmitRegister.innerText = "ENVIANDO INVITACIÓN...";
+
+            const inputName = document.getElementById('regName').value.trim().toUpperCase();
+            const inputEmail = document.getElementById('regEmail').value.trim().toLowerCase();
+
+            // Mapeo exacto pasando el código estricto SBK10OFF al parámetro client_code
+            const templateParams = {
+                to_name: inputName,
+                to_email: inputEmail,
+                client_code: CODIGO_DESCUENTO
+            };
+
+            emailjs.send("service_m6g28aa", "template_161whxr", templateParams)
+                .then(function(response) {
+                    const datosSesion = {
+                        name: inputName,
+                        email: inputEmail
+                    };
+                    localStorage.setItem('sbk_membership_session', JSON.stringify(datosSesion));
+                    chequearEstadoMembresia();
+                }, function(error) {
+                    alert("Error al procesar la solicitud. Intente nuevamente.");
+                    btnSubmitRegister.disabled = false;
+                    btnSubmitRegister.innerText = "Unirse a la Comunidad";
+                });
+        });
+
+        // Remueve la sesión de manera limpia al desvincular
+        window.cerrarSesionLocal = function() {
+            if(confirm("¿DESEA DESVINCULAR ESTA DIRECCIÓN DE CORREO ELECTRÓNICO?")) {
+                localStorage.removeItem('sbk_membership_session');
+                chequearEstadoMembresia();
+                document.getElementById('regName').value = "";
+                document.getElementById('regEmail').value = "";
+                btnSubmitRegister.disabled = false;
+                btnSubmitRegister.innerText = "Unirse a la Comunidad";
+            }
+        }
+
+        // Toggle del menú lateral en móviles idéntico al index
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Ejecución inicial de ciclo de vida
+        chequearEstadoMembresia();
+    </script>
+</body>
+</html>

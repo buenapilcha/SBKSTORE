@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago por Transferencia — SBK STORE</title>
+    <style>
+        /* Paleta Monocromática Estricta Estilo Premium (Fondo Blanco) */
+        :root {
+            --bg-main: #ffffff;
+            --bg-surface: #f5f5f7;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --border-color: #e5e5e7;
+            --accent-success: #008000;
+            --accent-error: #ff0000;
+            --btn-disabled: #cccccc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            /* ELIMINA EL RECUADRO AZUL/CELESTE AL TOCAR EN CELULARES */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            padding-bottom: 40px;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background-color: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        .secure-badge svg {
+            width: 12px;
+            height: 12px;
+            fill: var(--text-secondary);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL RESPONSIVE --- */
+        .transfer-wrapper {
+            margin-top: 64px;
+            padding: 24px 16px;
+            width: 100%;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 992px) {
+            .transfer-wrapper {
+                display: grid;
+                grid-template-columns: 1fr 420px;
+                padding: 48px 24px;
+                gap: 48px;
+            }
+        }
+
+        /* --- SECCIONES / BLOQUES --- */
+        .premium-block {
+            margin-bottom: 32px;
+        }
+
+        .block-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .block-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* --- FILAS DE DATOS --- */
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .data-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        
+        @media (min-width: 576px) {
+            .data-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .data-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .data-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* --- CUADROS COPIABLES OPTIMIZADOS MÓVIL --- */
+        .copy-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .copy-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .copy-text {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-all;
+            padding-right: 12px;
+        }
+
+        .btn-copy {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border: 1px solid var(--text-primary);
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .btn-copy:active {
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+        }
+        .btn-copy.copied {
+            border-color: var(--accent-success);
+            color: var(--accent-success);
+            background: none;
+        }
+
+        /* --- HIGHLIGHT MONTO TOTAL --- */
+        .total-highlight-box {
+            background: var(--bg-surface);
+            padding: 20px;
+            text-align: center;
+            margin-top: 24px;
+            border: 1px solid var(--border-color);
+        }
+        .total-highlight-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .total-highlight-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        /* --- ZONA DROPZONE COMPROBANTE --- */
+        .dropzone-box {
+            border: 1px dashed var(--border-color);
+            background: var(--bg-main);
+            padding: 36px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        .dropzone-box:hover {
+            border-color: var(--text-primary);
+        }
+        .dropzone-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .dropzone-subtext {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        #fileInput {
+            display: none;
+        }
+        
+        /* Vista previa archivo */
+        .file-preview-zone {
+            display: none;
+            margin-top: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .file-name {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 12px;
+        }
+        .btn-remove-file {
+            background: none;
+            border: none;
+            color: var(--accent-error);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* --- BARRA LATERAL RESUMEN --- */
+        .order-summary-sidebar {
+            background-color: var(--bg-surface);
+            padding: 24px 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 992px) {
+            .order-summary-sidebar {
+                border-top: none;
+                border-left: 1px solid var(--border-color);
+                padding: 0 0 0 48px;
+                background-color: transparent;
+                position: sticky;
+                top: 112px;
+                height: fit-content;
+            }
+        }
+
+        .mini-products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .mini-item { display: flex; align-items: center; gap: 12px; }
+        .mini-img-wrapper { width: 44px; height: 44px; background: #ffffff; border: 1px solid var(--border-color); flex-shrink: 0; position: relative; }
+        .mini-img { width: 100%; height: 100%; object-fit: cover; }
+        .mini-badge { position: absolute; top: -6px; right: -6px; background: var(--text-primary); color: var(--bg-main); font-size: 9px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .mini-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
+        .mini-price { font-size: 13px; font-weight: 700; text-align: right; }
+
+        .client-info-block {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .client-info-text { font-size: 12px; line-height: 1.4; }
+
+        /* --- CASILLA CÓDIGO DE DESCUENTO --- */
+        .coupon-container {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .coupon-field-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+        .coupon-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            outline: none;
+        }
+        .coupon-input:focus {
+            border-color: var(--text-primary);
+        }
+        .btn-apply-coupon {
+            background-color: var(--text-primary);
+            color: var(--bg-main);
+            border: none;
+            padding: 0 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+        .coupon-message {
+            font-size: 11px;
+            font-weight: 600;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cost-breakdown {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .cost-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); }
+        .cost-row.total-row { font-size: 15px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; padding-top: 4px; }
+
+        /* --- BOTÓN PRINCIPAL ACCIÓN --- */
+        .btn-submit-payment {
+            background-color: var(--btn-disabled);
+            color: var(--bg-main);
+            border: none;
+            padding: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: not-allowed;
+            width: 100%;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-submit-payment.active {
+            background-color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* --- CAPA OVERLAY DE CARGA / ÉXITO --- */
+        .status-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 24px;
+            text-align: center;
+        }
+        .status-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+        .status-message-title {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .status-message-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+         <a href="index.html" class="brand-logo">
+    <img src="logo.png" alt="SBK STORE" style="height:40px; width:auto; display:block;">
+</a>
+        <div class="secure-badge">
+            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            Verificación Segura
+        </div>
+    </nav>
+
+    <main class="transfer-wrapper">
+        
+        <section>
+            
+            <div class="premium-block">
+                <h2 class="block-title">Usá estos datos para realizar el pago</h2>
+                <p class="block-subtitle">Transferí desde la app de tu banco o billetera virtual ingresando los datos que figuran a continuación.</p>
+                
+                <div class="data-list">
+                    <div class="data-row">
+                        <span class="data-label">Plataforma</span>
+                        <span class="data-value">CLARO PAY</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Titular</span>
+                        <span class="data-value">MIGUEL FEDERICO FITIO DIEDERICH</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">DNI</span>
+                        <span class="data-value">39867503</span>
+                    </div>
+                </div>
+
+                <div class="copy-group">
+                    <label class="data-label">Alias</label>
+                    <div class="copy-box">
+                        <span class="copy-text" id="txtAlias">20398675038.claropay</span>
+                        <button type="button" class="btn-copy" onclick="copiarDato('txtAlias', this)">Copiar</button>
+                    </div>
+                </div>
+
+                <div class="copy-group">
+                    <label class="data-label">CBU / CVU</label>
+                    <div class="copy-box">
+                        <span class="copy-text" id="txtCbu">0000085700203986750381</span>
+                        <button type="button" class="btn-copy" onclick="copiarDato('txtCbu', this)">Copiar</button>
+                    </div>
+                </div>
+
+                <div class="total-highlight-box">
+                    <div class="total-highlight-label">Realizá el depósito por el monto exacto.</div>
+                    <div class="total-highlight-value" id="displayMontoTotal">$0</div>
+                </div>
+            </div>
+
+            <div class="premium-block" style="border-top: 1px solid var(--border-color); padding-top: 32px;">
+                <h2 class="block-title">Subir comprobante de pago</h2>
+                <p class="block-subtitle">Una vez realizada la transferencia, adjuntá la captura de pantalla o foto del comprobante para validar tu orden.</p>
+                
+                <div class="dropzone-box" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div class="dropzone-text">Seleccionar captura de pantalla</div>
+                    <div class="dropzone-subtext">o arrastrar archivo aquí (Formatos JPG, PNG)</div>
+                    <input type="file" id="fileInput" accept="image/*" onchange="manejarSeleccionArchivo(this.files)">
+                </div>
+
+                <div class="file-preview-zone" id="filePreview">
+                    <span class="file-name" id="fileNameText">comprobante.jpg</span>
+                    <button type="button" class="btn-remove-file" onclick="removerArchivo()">Eliminar</button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="order-summary-sidebar">
+            <h2 class="block-title" style="margin-bottom: 16px;">Resumen del pedido</h2>
+            
+            <div class="mini-products-list" id="miniProductsContainer"></div>
+            
+            <div class="client-info-block">
+                <div class="client-info-text"><span style="color:var(--text-secondary);">Destinatario:</span> <span id="clientName" style="font-weight: 600;">-</span></div>
+                <div class="client-info-text"><span style="color:var(--text-secondary);">Envío a:</span> <span id="clientDir" style="font-weight: 500;">-</span></div>
+            </div>
+
+            <div class="coupon-container">
+                <label class="data-label">Código de descuento</label>
+                <div class="coupon-field-wrapper">
+                    <input type="text" id="couponInput" class="coupon-input" placeholder="Ingresá tu código">
+                    <button type="button" class="btn-apply-coupon" onclick="validarCodigoDescuento()">Aplicar</button>
+                </div>
+                <div id="couponMessage" class="coupon-message"></div>
+            </div>
+
+            <div class="cost-breakdown">
+                <div class="cost-row"><span>Subtotal</span><span id="subtotalText">$0</span></div>
+                <div class="cost-row" id="rowDescuento" style="display: none;"><span>Descuento (10%)</span><span id="descuentoText" style="color: var(--accent-error); font-weight: 600;">-$0</span></div>
+                <div class="cost-row"><span>Envío</span><span style="color: var(--accent-success); font-weight:600;">Gratis</span></div>
+                <div class="cost-row total-row"><span>Total</span><span id="totalText">$0</span></div>
+            </div>
+
+            <button type="button" id="btnFinalizarTransferencia" class="btn-submit-payment" disabled onclick="enviarPedidoTelegram()">Ya pagué — Confirmar Pedido</button>
+        </section>
+    </main>
+
+    <div class="status-overlay" id="statusOverlay">
+        <div class="status-spinner" id="statusSpinner"></div>
+        <h3 class="status-message-title" id="statusTitle">Procesando envío de datos</h3>
+        <p class="status-message-desc" id="statusDesc">Estamos subiendo el comprobante y resguardando los detalles de tu compra. Por favor, esperá un momento.</p>
+    </div>
+
+    <script>
+        const TELEGRAM_TOKEN = "8808788652:AAEhlPL3MbE6Njd0QrblTX4vIQ0C1bKn3tc";
+        const TELEGRAM_CHAT_ID = "6493944778";
+
+        const ordenData = JSON.parse(localStorage.getItem('order_checkout_data'));
+        let archivoComprobante = null;
+        let esCodigoValido = false;
+
+        function inicializarPantallaTransferencia() {
+            if (!ordenData) {
+                alert("No hay una sesión de checkout activa.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            actualizarValoresTotales();
+
+            document.getElementById('clientName').innerText = `${ordenData.destinatario.nombre} ${ordenData.destinatario.apellido}`;
+            document.getElementById('clientDir').innerText = `${ordenData.destinatario.direccion}, ${ordenData.destinatario.ciudad}`;
+
+            const container = document.getElementById('miniProductsContainer');
+            container.innerHTML = "";
+            ordenData.productos.forEach(item => {
+                container.innerHTML += `
+                    <div class="mini-item">
+                        <div class="mini-img-wrapper">
+                            <img class="mini-img" src="${item.img}" alt="${item.name}">
+                            <span class="mini-badge">${item.cantidad}</span>
+                        </div>
+                        <div class="mini-name">${item.name}</div>
+                        <div class="mini-price">${item.price}</div>
+                    </div>`;
+            });
+
+            configurarDragAndDrop();
+        }
+
+        function actualizarValoresTotales() {
+            const subtotal = ordenData.totales.subtotal;
+            let totalFinal = subtotal;
+
+            if (esCodigoValido) {
+                const descuentoAplicado = Math.round(subtotal * 0.10);
+                totalFinal = subtotal - descuentoAplicado;
+                
+                document.getElementById('rowDescuento').style.display = 'flex';
+                document.getElementById('descuentoText').innerText = `-$${descuentoAplicado.toLocaleString('es-AR')}`;
+                
+                const msg = document.getElementById('couponMessage');
+                msg.style.display = 'block';
+                msg.style.color = 'var(--accent-success)';
+                msg.innerText = 'Código SBK10OFF aplicado con éxito';
+            } else {
+                document.getElementById('rowDescuento').style.display = 'none';
+            }
+
+            // Guardamos el total final en memoria del objeto para Telegram
+            ordenData.totales.total = totalFinal;
+
+            const totalFormateado = `$${totalFinal.toLocaleString('es-AR')}`;
+            document.getElementById('displayMontoTotal').innerText = totalFormateado;
+            document.getElementById('subtotalText').innerText = `$${subtotal.toLocaleString('es-AR')}`;
+            document.getElementById('totalText').innerText = totalFormateado;
+        }
+
+        window.validarCodigoDescuento = function() {
+            const input = document.getElementById('couponInput');
+            const msg = document.getElementById('couponMessage');
+            const codigo = input.value.trim().toUpperCase();
+
+            msg.style.display = 'block';
+
+            if (codigo === 'SBK10OFF') {
+                esCodigoValido = true;
+            } else {
+                esCodigoValido = false;
+                msg.style.color = 'var(--accent-error)';
+                msg.innerText = 'Código inválido';
+            }
+            
+            actualizarValoresTotales();
+        }
+
+        window.copiarDato = function(elementId, boton) {
+            const texto = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(texto).then(() => {
+                boton.innerText = "Copiado";
+                boton.classList.add('copied');
+                setTimeout(() => {
+                    boton.innerText = "Copiar";
+                    boton.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function configurarDragAndDrop() {
+            const dropzone = document.getElementById('dropzone');
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = "var(--text-primary)";
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = "var(--border-color)";
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                manejarSeleccionArchivo(dt.files);
+            }, false);
+        }
+
+        window.manejarSeleccionArchivo = function(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    archivoComprobante = file;
+                    document.getElementById('fileNameText').innerText = file.name;
+                    document.getElementById('filePreview').style.display = 'flex';
+                    verificarHabilitacionBoton();
+                } else {
+                    alert("Seleccioná un formato de imagen válido.");
+                }
+            }
+        }
+
+        window.removerArchivo = function() {
+            archivoComprobante = null;
+            document.getElementById('fileInput').value = "";
+            document.getElementById('filePreview').style.display = 'none';
+            verificarHabilitacionBoton();
+        }
+
+        function verificarHabilitacionBoton() {
+            const btn = document.getElementById('btnFinalizarTransferencia');
+            if (archivoComprobante) {
+                btn.removeAttribute('disabled');
+                btn.classList.add('active');
+            } else {
+                btn.setAttribute('disabled', 'true');
+                btn.classList.remove('active');
+            }
+        }
+
+        window.enviarPedidoTelegram = async function() {
+            if (!archivoComprobante || !ordenData) return;
+
+            const overlay = document.getElementById('statusOverlay');
+            overlay.style.display = 'flex';
+
+            let mensajeTexto = `📦 *NUEVA ORDEN DE COMPRA — BARBERSUPPLY*\n`;
+            mensajeTexto += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            mensajeTexto += `👤 *DATOS DEL CLIENTE:*\n`;
+            mensajeTexto += `• *Nombre:* ${ordenData.destinatario.nombre} ${ordenData.destinatario.apellido}\n`;
+            mensajeTexto += `• *Email:* ${ordenData.contacto.email}\n`;
+            mensajeTexto += `• *Teléfono:* ${ordenData.contacto.telefono}\n`;
+            mensajeTexto += `• *DNI/CUIT:* ${ordenData.facturacion.dniCuitTitular}\n\n`;
+
+            mensajeTexto += `📍 *DIRECCIÓN DE DESPACHO:*\n`;
+            mensajeTexto += `• *Calle/Nº:* ${ordenData.destinatario.direccion}\n`;
+            if(ordenData.destinatario.depto) mensajeTexto += `• *Piso/Depto:* ${ordenData.destinatario.depto}\n`;
+            if(ordenData.destinatario.barrio) mensajeTexto += `• *Barrio:* ${ordenData.destinatario.barrio}\n`;
+            mensajeTexto += `• *Ciudad:* ${ordenData.destinatario.ciudad}\n`;
+            mensajeTexto += `• *Provincia:* ${ordenData.destinatario.provincia}\n`;
+            mensajeTexto += `• *C.P.:* ${ordenData.destinatario.codigoPostal}\n\n`;
+
+            if(ordenData.facturacion.requiereFacturaA) {
+                mensajeTexto += `🏢 *DATOS FACTURA A:*\n`;
+                mensajeTexto += `• *Razón Social:* ${ordenData.facturacion.razonSocial}\n`;
+                mensajeTexto += `• *CUIT Fiscal:* ${ordenData.facturacion.cuitFiscal}\n`;
+                mensajeTexto += `• *Condición IVA:* ${ordenData.facturacion.condicionIva}\n`;
+                mensajeTexto += `• *Dir. Fiscal:* ${ordenData.facturacion.direccionFiscal}\n\n`;
+            } else {
+                mensajeTexto += `🧾 *FACTURACIÓN:* Consumidor Final\n\n`;
+            }
+
+            mensajeTexto += `🛒 *PRODUCTOS SOLICITADOS:*\n`;
+            ordenData.productos.forEach((p, index) => {
+                mensajeTexto += `${index + 1}. ${p.name} [x${p.cantidad}] — (${p.price})\n`;
+            });
+
+            if (esCodigoValido) {
+                mensajeTexto += `\n🎟️ *CÓDIGO APLICADO:* SBK10OFF (-10%)\n`;
+            }
+
+            mensajeTexto += `\n💵 *TOTAL FACTURADO:* $${ordenData.totales.total.toLocaleString('es-AR')}\n`;
+            mensajeTexto += `💳 *MÉTODO DE PAGO:* Transferencia Bancaria (Claro Pay)\n`;
+            mensajeTexto += `━━━━━━━━━━━━━━━━━━━━━`;
+
+            try {
+                const urlTexto = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+                const respuestaTexto = await fetch(urlTexto, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: mensajeTexto,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                if (!respuestaTexto.ok) throw new Error("Error en el envío de datos de texto.");
+
+                const urlFoto = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`;
+                const formData = new FormData();
+                formData.append('chat_id', TELEGRAM_CHAT_ID);
+                formData.append('photo', archivoComprobante);
+                formData.append('caption', `🧾 Comprobante de pago de ${ordenData.destinatario.nombre} ${ordenData.destinatario.apellido}`);
+
+                const respuestaFoto = await fetch(urlFoto, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!respuestaFoto.ok) throw new Error("Error en el envío del archivo.");
+
+                document.getElementById('statusSpinner').style.display = 'none';
+                document.getElementById('statusTitle').innerText = "Pedido Confirmado";
+                document.getElementById('statusTitle').style.color = "var(--accent-success)";
+                document.getElementById('statusDesc').innerText = "Tu comprobante y los datos de despacho han sido guardados correctamente en el sistema de SBK STORE.";
+                
+                localStorage.removeItem('barber_cart_items');
+                localStorage.removeItem('order_checkout_data');
+
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 4000);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('statusSpinner').style.display = 'none';
+                document.getElementById('statusTitle').innerText = "Error de conexión";
+                document.getElementById('statusTitle').style.color = "var(--accent-error)";
+                document.getElementById('statusDesc').innerText = "Hubo un problema de red al procesar los datos. Intentá presionar el botón nuevamente.";
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.getElementById('statusSpinner').style.display = 'block';
+                    document.getElementById('statusTitle').style.color = "var(--text-primary)";
+                    document.getElementById('statusTitle').innerText = "Procesando envío de datos";
+                }, 3500);
+            }
+        }
+
+        inicializarPantallaTransferencia();
+    </script>
+</body>
+</html>

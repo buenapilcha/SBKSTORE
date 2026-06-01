@@ -43,17 +43,21 @@ export const clippers = [
         ],
         specs: ["10.000 RPM", "motor híbrido MAG-LEV 2 de levitación magnética de 12W", "CHIP con Inteligencia Artificial","2500 mAh Hasta 180 minutos de uso continuo"]
     },
-    { 
+    {
         id: "CLIP-03",
         name: "B-WAY CLIPPER FASTER", 
-        price: "57.000", 
+        price: "$57.000", 
         cat: "Clippers",
         images: [
             "https://acdn-us.mitiendanube.com/stores/001/264/866/products/faster-4-047c4aad1d67ab379b17780825840637-1024-1024.png",
             "https://acdn-us.mitiendanube.com/stores/001/264/866/products/faster-6-57a27cdadaee00895f17780840141594-1024-1024.webp?w=1400",
             "https://acdn-us.mitiendanube.com/stores/001/264/866/products/faster-7-d58a509450b46ca6bd17780840138737-1024-1024.webp?w=1400"
         ],
-        specs: ["7800 RPM", "Cuchilla fija de acero de alto carbono", "Cuchilla móvil microdentada de cerámica","Indicador LED de energía","Batería de litio de 2200 mAh Hasta 240 minutos de uso continuo."]
+        specs: ["7800 RPM", "Cuchilla fija de acero de alto carbono", "Cuchilla móvil microdentada de cerámica","Indicador LED de energía","Batería de litio de 2200 mAh Hasta 240 minutos de uso continuo."],
+        isOffer: true,
+        discountTag: "27% OFF",
+        oldPrice: "$78.000",
+        stock: 84
     },
     { 
         id: "CLIP-04",

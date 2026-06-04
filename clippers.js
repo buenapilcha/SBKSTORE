@@ -57,7 +57,7 @@ export const clippers = [
         isOffer: true,
         discountTag: "27% OFF",
         oldPrice: "$78.000",
-        stock: 84
+        stock: 8
     },
     { 
         id: "CLIP-04",

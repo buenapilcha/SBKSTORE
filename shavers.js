@@ -83,7 +83,7 @@ export const shavers = [
         name: "W-MARK SHAVER NG-991", 
         price: "$51.000", 
         cat: "Shavers",
-        images: ["https://http2.mlstatic.com/D_Q_NP_2X_929666-MLA92883692077_092025-P.webp", "https://http2.mlstatic.com/D_NQ_NP_697231-MLA92509894350_092025-O.webp", "https://acdn-us.mitiendanube.com/stores/006/077/318/products/wmark-ng-991-double-foil-shaver-gold-1-3a12ed7a54c80c056b17553534040193-480-0.webp"],
+        images: ["https://acdn-us.mitiendanube.com/stores/006/077/318/products/wmark-ng-991-double-foil-shaver-gold-1-3a12ed7a54c80c056b17553534040193-480-0.webp"],
         specs: ["6700 RPM", "INALAMBRICA", "DOBLE CUCHILLA"]
     },
     { 
